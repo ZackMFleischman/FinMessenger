@@ -44,11 +44,21 @@ def SendFinAMessage(subject, body):
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
 
-    # msg = CreateMessage("zfleischman@gmail.com", "zfleischman@in.getfin.com", subject, body)  # nopep8
-    msg = CreateMessage("zfleischman@gmail.com", "zfleischman@gmail.com", subject, body)  # nopep8
+    from_address, to_address = get_email_addresses()
+    msg = CreateMessage(from_address, to_address, subject, body)
     sentMessage = SendMessage(service, "me", msg)
     if sentMessage:
         print ("Message sent!")
+
+def get_email_addresses():
+    """Return a tuple of (from, to) email addresses.
+       These are stored in `emails.txt` in the form:
+           from@gmail.com
+           to@gmail.com
+        """
+    with  open('emails.txt', 'r') as f:
+        emails = f.readlines()
+        return (emails[0].rstrip(), emails[1].rstrip())
 
 
 def get_credentials():
