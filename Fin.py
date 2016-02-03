@@ -132,7 +132,7 @@ def GetAnimalName():
 # When run as a stand alone...
 if __name__ == '__main__':
     if args:
-        subject = "[Mission: %s] Hey Fin! Could you help me out? ^_^" % GetAnimalName()
+        subject = "Hey Fin! Could you help me out? ^_^  (Thread: %s)" % GetAnimalName()
         if args.subject:
             subject = args.subject
         body = args.message
