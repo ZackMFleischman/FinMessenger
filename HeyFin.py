@@ -25,7 +25,7 @@ except ImportError:
 SCOPES = 'https://mail.google.com/'  # All scopes here.
 
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
+APPLICATION_NAME = 'FinMessenger'
 
 
 def get_credentials():
@@ -42,7 +42,7 @@ def get_credentials():
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
-                                   'gmail-python-quickstart.json')
+                                   'fin_messenger.json')
 
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
