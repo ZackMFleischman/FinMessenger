@@ -59,7 +59,9 @@ def get_email_addresses():
            from@gmail.com
            to@gmail.com
     """
-    with open('~/repos/FinMessenger/emails.txt', 'r') as f:
+    home_dir = os.path.expanduser('~')
+    emails_path = os.path.join(home_dir, 'repos/FinMessenger/emails.txt')
+    with open(emails_path, 'r') as f:
         emails = f.readlines()
         return (emails[0].rstrip(), emails[1].rstrip())
 
@@ -138,7 +140,9 @@ def CreateMessage(sender, to, subject, message_text):
 
 def GetAnimalName():
     """Return a random animal name from animals.txt"""
-    with open('~/repos/FinMessenger/animals.txt', 'r') as f:
+    home_dir = os.path.expanduser('~')
+    animals_path = os.path.join(home_dir, 'repos/FinMessenger/animals.txt')
+    with open(animals_path, 'r') as f:
         animals = f.readlines()
         return animals[random.randint(0, len(animals)-1)].rstrip()
 
