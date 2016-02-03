@@ -2,6 +2,7 @@ from __future__ import print_function
 import base64
 import httplib2
 import os
+import random
 
 from email.mime.text import MIMEText
 
@@ -121,10 +122,17 @@ def CreateMessage(sender, to, subject, message_text):
         raw = {'raw': base64.urlsafe_b64encode(message.as_string())}
     return raw
 
+
+def GetAnimalName():
+    """Return a random animal name from animals.txt"""
+    with  open('animals.txt', 'r') as f:
+        animals = f.readlines()
+        return animals[random.randint(0,len(animals)-1)].rstrip()
+
 # When run as a stand alone...
 if __name__ == '__main__':
     if args:
-        subject = "Hey Fin! Could you help me out? ^_^"
+        subject = "[Mission: %s] Hey Fin! Could you help me out? ^_^" % GetAnimalName()
         if args.subject:
             subject = args.subject
         body = args.message
