@@ -12,15 +12,23 @@ import oauth2client
 from oauth2client import client
 from oauth2client import tools
 
-# Argument Parsing to get the main message and optional title/subject
+"""
+Argument Parsing to get the main message and optional subject
+
+    args:
+        required 1st arg: Title/subject if -t is not supplied. Body if -t is
+                          present.
+        -s [subject]: (Optional) This will be the subject. Default is
+                      "Hey Fin! Could you help me out? ^_^"
+"""
 try:
     import argparse
     parser = argparse.ArgumentParser(parents=[tools.argparser])
     parser.add_argument('message', help='The message to send to Fin')
-    parser.add_argument('-t', dest='title', help='The optional title of the message')  # nopep8
-    flags = parser.parse_args()
+    parser.add_argument('-s', dest='subject', help='The optional subject of the message')  # nopep8
+    args = parser.parse_args()
 except ImportError:
-    flags = None
+    args = None
 
 # View all scopes here:  https://developers.google.com/gmail/api/auth/scopes
 SCOPES = 'https://mail.google.com/'  # This is "all scopes"
@@ -30,12 +38,6 @@ APPLICATION_NAME = 'FinMessenger'
 
 def SendFinAMessage(subject, body):
     """Sends an email to Fin with the subject and body passed in as arguments.
-
-    args:
-        required 1st arg: Title/subject if -t is not supplied. Body if -t is
-                          present.
-        -t [title]: (Optional) This will be the title and the 1st arg is the
-                    body.
     """
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -69,8 +71,8 @@ def get_credentials():
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
         flow.user_agent = APPLICATION_NAME
-        if flags:
-            credentials = tools.run_flow(flow, store, flags)
+        if args:
+            credentials = tools.run_flow(flow, store, args)
         else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
@@ -119,13 +121,12 @@ def CreateMessage(sender, to, subject, message_text):
         raw = {'raw': base64.urlsafe_b64encode(message.as_string())}
     return raw
 
+# When run as a stand alone...
 if __name__ == '__main__':
-    body = "The title says it all :)"
-    subject = ""
-    if flags:
-        if flags.title:
-            subject = flags.title
-            body = flags.message
-        else:
-            subject = flags.message
-    SendFinAMessage(subject, body)
+    if args:
+        subject = "Hey Fin! Could you help me out? ^_^"
+        if args.subject:
+            subject = args.subject
+        body = args.message
+
+        SendFinAMessage(subject, body)
