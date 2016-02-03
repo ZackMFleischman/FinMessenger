@@ -12,6 +12,7 @@ import oauth2client
 from oauth2client import client
 from oauth2client import tools
 
+# Argument Parsing to get the main message and optional title/subject
 try:
     import argparse
     parser = argparse.ArgumentParser(parents=[tools.argparser])
@@ -22,10 +23,29 @@ except ImportError:
     flags = None
 
 # View all scopes here:  https://developers.google.com/gmail/api/auth/scopes
-SCOPES = 'https://mail.google.com/'  # All scopes here.
-
+SCOPES = 'https://mail.google.com/'  # This is "all scopes"
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'FinMessenger'
+
+
+def SendFinAMessage(subject, body):
+    """Sends an email to Fin with the subject and body passed in as arguments.
+
+    args:
+        required 1st arg: Title/subject if -t is not supplied. Body if -t is
+                          present.
+        -t [title]: (Optional) This will be the title and the 1st arg is the
+                    body.
+    """
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+
+    # msg = CreateMessage("zfleischman@gmail.com", "zfleischman@in.getfin.com", subject, body)  # nopep8
+    msg = CreateMessage("zfleischman@gmail.com", "zfleischman@gmail.com", subject, body)  # nopep8
+    sentMessage = SendMessage(service, "me", msg)
+    if sentMessage:
+        print ("Message sent!")
 
 
 def get_credentials():
@@ -99,19 +119,7 @@ def CreateMessage(sender, to, subject, message_text):
         raw = {'raw': base64.urlsafe_b64encode(message.as_string())}
     return raw
 
-
-def SendFinAMessage():
-    """Sends an email to Fin with the subject and body passed in as arguments.
-
-    args:
-        required 1st arg: Title if -t is not supplied. Body if -t is present.
-        -t [title]: (Optional) This will be the title and the 1st arg is the
-        body.
-    """
-    credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-
+if __name__ == '__main__':
     body = "The title says it all :)"
     subject = ""
     if flags:
@@ -120,11 +128,4 @@ def SendFinAMessage():
             body = flags.message
         else:
             subject = flags.message
-    # msg = CreateMessage("zfleischman@gmail.com", "zfleischman@in.getfin.com", subject, body)  # nopep8
-    msg = CreateMessage("zfleischman@gmail.com", "zfleischman@gmail.com", subject, body)  # nopep8
-    sentMessage = SendMessage(service, "me", msg)
-    if sentMessage:
-        print ("Message sent!")
-
-if __name__ == '__main__':
-    SendFinAMessage()
+    SendFinAMessage(subject, body)
