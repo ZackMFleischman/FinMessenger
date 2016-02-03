@@ -35,6 +35,7 @@ except ImportError:
 SCOPES = 'https://mail.google.com/'  # This is "all scopes"
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'FinMessenger'
+PATH_TO_REPO_FROM_HOME = 'repos/FinMessenger'
 
 
 def SendFinAMessage(subject, body):
@@ -52,6 +53,12 @@ def SendFinAMessage(subject, body):
         print ("Message sent!")
 
 
+def get_path_to_repo():
+    home_dir = os.path.expanduser('~')
+    repo_path = os.path.join(home_dir, PATH_TO_REPO_FROM_HOME)
+    return repo_path
+
+
 def get_email_addresses():
     """Return a tuple of (from, to) email addresses.
 
@@ -59,8 +66,7 @@ def get_email_addresses():
            from@gmail.com
            to@gmail.com
     """
-    home_dir = os.path.expanduser('~')
-    emails_path = os.path.join(home_dir, 'repos/FinMessenger/emails.txt')
+    emails_path = os.path.join(get_path_to_repo(), 'emails.txt')
     with open(emails_path, 'r') as f:
         emails = f.readlines()
         return (emails[0].rstrip(), emails[1].rstrip())
@@ -140,8 +146,7 @@ def CreateMessage(sender, to, subject, message_text):
 
 def GetAnimalName():
     """Return a random animal name from animals.txt"""
-    home_dir = os.path.expanduser('~')
-    animals_path = os.path.join(home_dir, 'repos/FinMessenger/animals.txt')
+    animals_path = os.path.join(get_path_to_repo(), 'animals.txt')
     with open(animals_path, 'r') as f:
         animals = f.readlines()
         return animals[random.randint(0, len(animals)-1)].rstrip()
