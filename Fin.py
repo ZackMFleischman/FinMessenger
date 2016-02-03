@@ -39,6 +39,7 @@ APPLICATION_NAME = 'FinMessenger'
 
 def SendFinAMessage(subject, body):
     """Sends an email to Fin with the subject and body passed in as arguments.
+
     """
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -50,13 +51,15 @@ def SendFinAMessage(subject, body):
     if sentMessage:
         print ("Message sent!")
 
+
 def get_email_addresses():
     """Return a tuple of (from, to) email addresses.
+
        These are stored in `emails.txt` in the form:
            from@gmail.com
            to@gmail.com
-        """
-    with  open('emails.txt', 'r') as f:
+    """
+    with open('~/repos/FinMessenger/emails.txt', 'r') as f:
         emails = f.readlines()
         return (emails[0].rstrip(), emails[1].rstrip())
 
@@ -135,14 +138,14 @@ def CreateMessage(sender, to, subject, message_text):
 
 def GetAnimalName():
     """Return a random animal name from animals.txt"""
-    with  open('animals.txt', 'r') as f:
+    with open('~/repos/FinMessenger/animals.txt', 'r') as f:
         animals = f.readlines()
-        return animals[random.randint(0,len(animals)-1)].rstrip()
+        return animals[random.randint(0, len(animals)-1)].rstrip()
 
 # When run as a stand alone...
 if __name__ == '__main__':
     if args:
-        subject = "Hey Fin! Could you help me out? ^_^  (Thread: %s)" % GetAnimalName()
+        subject = "Hey Fin! Could you help me out? ^_^  (Thread: %s)" % GetAnimalName()  # nopep8
         if args.subject:
             subject = args.subject
         body = args.message
