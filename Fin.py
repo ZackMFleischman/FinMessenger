@@ -21,12 +21,15 @@ Argument Parsing to get the main message and optional subject
                           present.
         -s [subject]: (Optional) This will be the subject. Default is
                       "Hey Fin! Could you help me out? ^_^"
+        -t:           (Optional) Test mode. This will send an email to yourself
+                      instead of Fin.
 """
 try:
     import argparse
     parser = argparse.ArgumentParser(parents=[tools.argparser])
     parser.add_argument('message', help='The message to send to Fin')
     parser.add_argument('-s', dest='subject', help='The optional subject of the message')  # nopep8
+    parser.add_argument('-t', help='Test mode. If supplied, this will send an email to yourself instead of Fin', action="store_true")  # nopep8
     args = parser.parse_args()
 except ImportError:
     args = None
@@ -48,9 +51,7 @@ def SendFinAMessage(subject, body):
 
     from_address, to_address = get_email_addresses()
     msg = CreateMessage(from_address, to_address, subject, body)
-    sentMessage = SendMessage(service, "me", msg)
-    if sentMessage:
-        print ("Message sent!")
+    return SendMessage(service, "me", msg)
 
 
 def get_path_to_repo():
@@ -67,9 +68,12 @@ def get_email_addresses():
            to@gmail.com
     """
     emails_path = os.path.join(get_path_to_repo(), 'emails.txt')
+    if args and args.t:
+        print("Test mode! Sending email to self instead of Fin...")
+
     with open(emails_path, 'r') as f:
         emails = f.readlines()
-        return (emails[0].rstrip(), emails[1].rstrip())
+        return (emails[0].rstrip(), emails[0 if (args and args.t) else 1].rstrip())  # nopep8
 
 
 def get_credentials():
@@ -105,13 +109,13 @@ def SendMessage(service, user_id, message):
     """Send an email message.
 
     Args:
-    service: Authorized Gmail API service instance.
-    user_id: User's email address. The special value "me"
-    can be used to indicate the authenticated user.
-    message: Message to be sent.
+        service: Authorized Gmail API service instance.
+        user_id: User's email address. The special value "me"
+                 can be used to indicate the authenticated user.
+        message: Message to be sent.
 
     Returns:
-    Sent Message.
+        Sent Message.
     """
     try:
         message = (service.users().messages().send(userId=user_id, body=message).execute())  # nopep8
@@ -124,13 +128,13 @@ def CreateMessage(sender, to, subject, message_text):
     """Create a message for an email.
 
     Args:
-    sender: Email address of the sender.
-    to: Email address of the receiver.
-    subject: The subject of the email message.
-    message_text: The text of the email message.
+        sender: Email address of the sender.
+        to: Email address of the receiver.
+        subject: The subject of the email message.
+        message_text: The text of the email message.
 
     Returns:
-    An object containing a base64 encoded email object.
+        An object containing a base64 encoded email object.
     """
     message = MIMEText(message_text)
     message['to'] = to
@@ -154,9 +158,13 @@ def GetAnimalName():
 # When run as a stand alone...
 if __name__ == '__main__':
     if args:
-        subject = "Hey Fin! Could you help me out? ^_^  (Thread: %s)" % GetAnimalName()  # nopep8
+        thread_name = GetAnimalName()
+        subject = "Hey Fin! Could you help me out? ^_^  (Thread: %s)" % thread_name  # nopep8
         if args.subject:
             subject = args.subject
         body = args.message
 
-        SendFinAMessage(subject, body)
+        if SendFinAMessage(subject, body):
+            print ("Message sent! (Thread: %s)" % thread_name)
+        else:
+            print ("Message failed to send :(")
