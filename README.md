@@ -2,7 +2,7 @@
 Command line tool to quickly send emails/commands to [Fin](https://www.getfin.com/) via your Gmail account.
 
 ## Usage
-`python fin.py "Message Body" -s "Message Subject"`
+`python Fin.py "Message Body" -s "Message Subject"`
 
 
 The `-s [Message subject]` is optional, and the subject will be auto-filled if left out.
